@@ -22,6 +22,7 @@
     {
         Detail,
         List,
+        ActiveList,
         ActionStatusList,
     }
 }

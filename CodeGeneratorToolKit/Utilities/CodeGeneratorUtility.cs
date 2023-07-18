@@ -12,7 +12,8 @@ namespace CodeGeneratorToolKit.Utilities
         /// <returns></returns>
         public static Type? GetViewModelAssembly(GeneratorViewModel model)
         {
-            return AssemblybuilderUtility.CreateAssemblyBuilder(model?.Assembly, "Model", $"{model?.ClassVM?.ClassName}{model?.FileName}ViewModel", model?.ClassVM?.IsList);
+            var fileName = $"{model?.ClassVM?.ClassName.Replace("Detail", "").Replace("List", "")}{model?.FileName}{model?.ClassVM?.ClassName.Replace("Active", "").Replace("ActionStatus", "")}";
+            return AssemblybuilderUtility.CreateAssemblyBuilder(model?.Assembly, "Model", $"{fileName}ViewModel", model?.ClassVM?.IsList);
         }
         /// <summary>
         /// 
@@ -21,6 +22,8 @@ namespace CodeGeneratorToolKit.Utilities
         /// <returns></returns>
         public static async Task GenerateAndWriteToCommandFeatureFile(GeneratorViewModel model, Type responseViewModel, Type iUnitOfWorkVM)
         {
+            var fileName = $"{model?.HandlerVM?.QueryType.ToString().Replace("Detail", "").Replace("List", "")}{model?.FileName}{model?.HandlerVM?.QueryType.ToString().Replace("Active", "").Replace("ActionStatus", "")}";
+
             #region Create Directory
             //Create Directory
             string filePathCommand = Path.Combine(Directory.GetCurrentDirectory(), model?.FolderName, $"{model?.HandlerVM?.OprationType}s", $"{model?.HandlerVM?.CommandType}");
@@ -35,7 +38,7 @@ namespace CodeGeneratorToolKit.Utilities
             #region Response view model class
             string generateClassType = TemplateGenerator.GenerateClassViewModel(model);
             // Write the ViewModel generated code to a file
-            using StreamWriter classWriter = new($"{filePathViewModel}\\{model?.ClassVM?.ClassName}{model?.FileName}ViewModel.cs");
+            using StreamWriter classWriter = new($"{filePathViewModel}\\{fileName}ViewModel.cs");
             await classWriter.WriteAsync(generateClassType);
             Type? getViewModel = GetViewModelAssembly(model);
             #endregion
@@ -92,6 +95,8 @@ namespace CodeGeneratorToolKit.Utilities
         /// <returns></returns>
         public static async Task GenerateAndWriteToQueryFeatureFile(GeneratorViewModel model, Type responseViewModel, Type iUnitOfWorkVM)
         {
+            var fileName = $"{model?.HandlerVM?.QueryType.ToString().Replace("Detail", "").Replace("List", "")}{model?.FileName}{model?.HandlerVM?.QueryType.ToString().Replace("Active", "").Replace("ActionStatus", "")}";
+
             #region Create Directory
             //Create Directory
             string filePathQuery = Path.Combine(Directory.GetCurrentDirectory(), model?.FolderName, $"{model?.HandlerVM?.OprationType?.ToString()[..4]}ies", $"Get{model?.HandlerVM?.QueryType}");
@@ -106,7 +111,7 @@ namespace CodeGeneratorToolKit.Utilities
             #region Response view model class
             string generateClassType = TemplateGenerator.GenerateClassViewModel(model);
             // Write the ViewModel generated code to a file
-            using StreamWriter classWriter = new($"{filePathViewModel}\\{model?.ClassVM?.ClassName}{model?.FileName}ViewModel.cs");
+            using StreamWriter classWriter = new($"{filePathViewModel}\\{fileName}ViewModel.cs");
             await classWriter.WriteAsync(generateClassType);
             Type? getViewModel = GetViewModelAssembly(model);
             #endregion
@@ -118,9 +123,9 @@ namespace CodeGeneratorToolKit.Utilities
 
             string generatedQueryType = TemplateGenerator.GenerateQueryType(model);
             // Write the command generated code to a file
-            using StreamWriter queryWriter = new($"{filePathQuery}\\{model?.HandlerVM?.QueryType}{model?.FileName}Query.cs");
+            using StreamWriter queryWriter = new($"{filePathQuery}\\{fileName}Query.cs");
             await queryWriter.WriteAsync(generatedQueryType);
-            Type? getQuery = AssemblybuilderUtility.CreateAssemblyBuilder(model?.Assembly, "Model", $"{model?.HandlerVM?.QueryType}{model?.FileName}Query");
+            Type? getQuery = AssemblybuilderUtility.CreateAssemblyBuilder(model?.Assembly, "Model", $"{fileName}Query");
             #endregion
 
             #region Set view model in handler
@@ -140,7 +145,7 @@ namespace CodeGeneratorToolKit.Utilities
             #region Handler generated code
             // Write the handler generated code to a file
             string generatedHandlerType = TemplateGenerator.GenerateHandlerType(model);
-            using StreamWriter handlerWriter = new($"{filePathQuery}\\{model?.HandlerVM?.QueryType}{model?.FileName}Handler.cs");
+            using StreamWriter handlerWriter = new($"{filePathQuery}\\{fileName}Handler.cs");
             await handlerWriter.WriteAsync(generatedHandlerType);
             #endregion
 
@@ -149,7 +154,7 @@ namespace CodeGeneratorToolKit.Utilities
             {
                 // Write the validator generated code to a file
                 string generateValidatorType = TemplateGenerator.GenerateCommandOrQueryValidatorType(model);
-                using StreamWriter validatorWriter = new($"{filePathQuery}\\{model?.HandlerVM?.QueryType}{model?.FileName}Validator.cs");
+                using StreamWriter validatorWriter = new($"{filePathQuery}\\{fileName}Validator.cs");
                 await validatorWriter.WriteAsync(generateValidatorType);
             }
             #endregion

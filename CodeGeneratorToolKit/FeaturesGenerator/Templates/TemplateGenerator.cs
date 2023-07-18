@@ -47,7 +47,7 @@ namespace CodeGeneratorToolKit.FeaturesGenerator.Templates
                 // Build the Props
                 PropsBuilder = TemplateBuilder.ClassProperties(model?.CommandOrQueryVM?.PropsNames),
             };
-            string code = handlerTemp.MediatorQueryHandler(model);
+            string code = handlerTemp.MediatorQuery(model);
 
             // Compile the code
             // return CodeCompiler.Compilation(model, code);
@@ -99,6 +99,7 @@ namespace CodeGeneratorToolKit.FeaturesGenerator.Templates
                     FuncOperationContent = CommandBuilder.DeleteCommand;
 
                 Code = handlerTemp.MediatorCommandHandler(model, FuncOperationContent);
+                
                 // Compile the code
                 // return CodeCompiler.Compilation(model, code);
             }
@@ -109,6 +110,9 @@ namespace CodeGeneratorToolKit.FeaturesGenerator.Templates
                 else
                     if (model?.HandlerVM?.QueryType == Enumerations.QueryType.List)
                     FuncOperationContent = QueryBuilder.ListQuery;
+                else
+                if (model?.HandlerVM?.QueryType == Enumerations.QueryType.ActiveList)
+                    FuncOperationContent = QueryBuilder.ActiveListQuery;
                 else
                     FuncOperationContent = QueryBuilder.ActionStatusListQuery;
 
@@ -170,6 +174,5 @@ namespace CodeGeneratorToolKit.FeaturesGenerator.Templates
 
             return code;
         }
-        
     }
 }

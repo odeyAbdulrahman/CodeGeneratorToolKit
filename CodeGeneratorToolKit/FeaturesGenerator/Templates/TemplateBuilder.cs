@@ -1,6 +1,8 @@
 ﻿using CodeGeneratorToolKit.FeaturesGenerator.Enumerations;
 using CodeGeneratorToolKit.FeaturesGenerator.ViewModels;
+using CodeGeneratorToolKit.Utilities;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace CodeGeneratorToolKit.FeaturesGenerator.Templates
 {
@@ -58,14 +60,14 @@ namespace CodeGeneratorToolKit.FeaturesGenerator.Templates
             StringBuilder PropertiesBuilder = new();
             StringBuilder ParametersBuilder = new();
             StringBuilder InitBuilder = new();
-            for (int i = 0; i < ConstructorParamTypes.Count; i++)
+            for (int i = 0; i < ConstructorParamTypes?.Count; i++)
             {
                 Type paramType = ConstructorParamTypes[i];
                 string genTypeName = paramType.IsGenericType ? $"{paramType.Name.Split('`')[0]}<{string.Join(", ", paramType.GetGenericArguments().Select(t => t.Name))}>" : paramType.Name;
                 string paramTypeName = paramType.IsGenericType ? genTypeName[1..genTypeName.IndexOf("<")]: genTypeName[1..];
                 paramTypeName = paramTypeName == "UnitOfWorkVM" ? "UnitOfWork" : paramTypeName;
-                ParametersBuilder.Append($"{genTypeName} {paramTypeName.ToLower()}");
-                PropertiesBuilder.Append($"private readonly {genTypeName} {paramTypeName};   ");
+                ParametersBuilder.Append($"{genTypeName.RemoveListType()} {paramTypeName.ToLower()}");
+                PropertiesBuilder.Append($"private readonly {genTypeName.RemoveListType()} {paramTypeName};   ");
                 InitBuilder.Append($"{paramTypeName} = {paramTypeName.ToLower()}");
 
 
@@ -101,13 +103,14 @@ namespace {generatorModel?.Namespace}.{generatorModel?.HandlerVM?.OprationType}s
         /// <param name="templateModel"></param>
         /// <param name="generatorModel"></param>
         /// <returns></returns>
-        public static string? MediatorQueryHandler(this CommandTemplateViewModel? templateModel, GeneratorViewModel? generatorModel)
+        public static string? MediatorQuery(this CommandTemplateViewModel? templateModel, GeneratorViewModel? generatorModel)
         {
+            var fileName = $"{generatorModel?.HandlerVM?.QueryType.ToString().Replace("Detail", "").Replace("List", "")}{generatorModel?.FileName}{generatorModel?.HandlerVM?.QueryType.ToString().Replace("Active", "").Replace("ActionStatus", "")}";
             return
 $@"{templateModel?.UsingDirectivesBuilder}
 namespace {generatorModel?.Namespace}.{generatorModel?.HandlerVM?.OprationType.ToString()[..4]}ies.Get{generatorModel?.HandlerVM?.QueryType}
 {{
-    public class {generatorModel?.HandlerVM?.QueryType}{generatorModel?.FileName}Query {(generatorModel?.CommandOrQueryVM?.HasActionVM == true ? ": ActionViewModel," : ":")} IRequest<{templateModel?.ResponseTypeName}>
+    public class {fileName}Query {(generatorModel?.CommandOrQueryVM?.HasActionVM == true ? ": ActionViewModel," : ":")} IRequest<{templateModel?.ResponseTypeName}>
     {{
         {templateModel?.PropsBuilder}
     }}
@@ -150,14 +153,15 @@ namespace {generatorModel?.Namespace}.{generatorModel?.HandlerVM?.OprationType}s
         /// <returns></returns>
         public static string? MediatorQueryHandler(this TemplateViewModel? templateModel, GeneratorViewModel? generatorModel, Func<TemplateViewModel?, GeneratorViewModel?, string> funcOperationContent)
         {
+            var fileName = $"{generatorModel?.HandlerVM?.QueryType.ToString().Replace("Detail", "").Replace("List", "")}{generatorModel?.FileName}{generatorModel?.HandlerVM?.QueryType.ToString().Replace("Active", "").Replace("ActionStatus", "")}";
             return
 $@"{templateModel?.UsingDirectivesBuilder}
 namespace {generatorModel?.Namespace}.{generatorModel?.HandlerVM?.OprationType?.ToString()[..4]}ies.Get{generatorModel?.HandlerVM?.QueryType}
 {{
-    internal class {generatorModel?.HandlerVM?.QueryType}{generatorModel?.FileName}Handle : IRequestHandler<{templateModel?.RequestTypeName}, {templateModel?.ResponseTypeName}>
+    public class {fileName}Handle : IRequestHandler<{templateModel?.RequestTypeName}, {templateModel?.ResponseTypeName}>
     {{
         {templateModel?.ConstructorPropsBuilder}
-        public {generatorModel?.HandlerVM?.QueryType}{generatorModel?.FileName}Handle({templateModel?.ConstructorParamsBuilder})
+        public {fileName}Handle({templateModel?.ConstructorParamsBuilder})
         {{
             {templateModel?.ConstructorInitsBuilder};
         }}
@@ -199,13 +203,14 @@ namespace {generatorModel?.Namespace}.{generatorModel?.HandlerVM?.OprationType}s
         /// <returns></returns>
         public static string? MediatorQueryValidator(this ValidatorTemplateViewModel? templateModel, GeneratorViewModel? generatorModel)
         {
+            var fileName = $"{generatorModel?.HandlerVM?.QueryType.ToString().Replace("Detail", "").Replace("List", "")}{generatorModel?.FileName}{generatorModel?.HandlerVM?.QueryType.ToString().Replace("Active", "").Replace("ActionStatus", "")}";
             return
 $@"{templateModel?.UsingDirectivesBuilder}
 namespace {generatorModel?.Namespace}.{generatorModel?.HandlerVM?.OprationType.ToString()[..4]}ies.Get{generatorModel?.HandlerVM?.QueryType}
 {{
-    public class {generatorModel?.HandlerVM?.QueryType}{generatorModel?.FileName}Validator: AbstractValidator<{templateModel?.CommandOrQueryTypeName}>
+    public class {fileName}Validator: AbstractValidator<{templateModel?.CommandOrQueryTypeName}>
     {{
-       public {generatorModel?.HandlerVM?.QueryType}{generatorModel?.FileName}Validator()
+       public {fileName}Validator()
         {{
             {templateModel?.RulePropsBuilder}
         }}
@@ -220,11 +225,13 @@ namespace {generatorModel?.Namespace}.{generatorModel?.HandlerVM?.OprationType.T
         /// <returns></returns>
         public static string? ClassViewModel(this ClassTemplateViewModel? templateModel, GeneratorViewModel? generatorModel)
         {
+            var fileName = $"{generatorModel?.HandlerVM?.QueryType.ToString().Replace("Detail", "").Replace("List", "")}{generatorModel?.FileName}{generatorModel?.HandlerVM?.QueryType.ToString().Replace("Active", "").Replace("ActionStatus", "")}";
+
             return
 $@"{templateModel?.UsingDirectivesBuilder}
 namespace {generatorModel?.Namespace}.ViewModels
 {{
-    public class {generatorModel?.ClassVM?.ClassName}{generatorModel?.FileName}ViewModel
+    public class {fileName}ViewModel
     {{
         {templateModel?.PropsBuilder}
     }}

@@ -30,7 +30,26 @@ namespace CodeGeneratorToolKit.FeaturesGenerator.Templates
         {
             return
         $@"
-            {generatorModel?.ClassVM?.ClassName}{generatorModel?.FileName}Validator validator = new();
+            {generatorModel?.FileName}{generatorModel?.ClassVM?.ClassName}Validator validator = new();
+            var isValid = await validator.ValidateAsync(request, cancellationToken);
+            if (isValid.Errors.Any())
+                return new {templateModel?.ResponseTypeName}(FeedBackCode.ValidationNotValid, isValid.Errors);
+
+            var getList = await UnitOfWork.{generatorModel?.FileName}.GetAllAsync(request.PageIndex, request.PageSize, 
+                filter: x => x.ActionStatus != ActionStatus.Deleted && x.ActionStatus != ActionStatus.Archived, 
+                orderBy: x => x.OrderByDescending(xx => xx.CreatedDate));
+            
+            if (!getList.Any())
+                return new {templateModel?.ResponseTypeName}(FeedBackCode.NotFound);
+
+            return new {templateModel?.ResponseTypeName}(FeedBackCode.OK, getList);
+        ";
+        }
+        public static string? ActiveListQuery(TemplateViewModel templateModel, GeneratorViewModel generatorModel)
+        {
+            return
+        $@"
+            {generatorModel?.ClassVM?.ClassName.Replace("List", "")}{generatorModel?.FileName}{generatorModel?.ClassVM?.ClassName.Replace("Active", "")}Validator validator = new();
             var isValid = await validator.ValidateAsync(request, cancellationToken);
             if (isValid.Errors.Any())
                 return new {templateModel?.ResponseTypeName}(FeedBackCode.ValidationNotValid, isValid.Errors);
@@ -49,7 +68,7 @@ namespace CodeGeneratorToolKit.FeaturesGenerator.Templates
         {
             return
         $@"
-            {generatorModel?.ClassVM?.ClassName}{generatorModel?.FileName}Validator validator = new();
+            {generatorModel?.ClassVM?.ClassName.Replace("List", "")}{generatorModel?.FileName}{generatorModel?.ClassVM?.ClassName.Replace("ActionStatus", "")}Validator validator = new();
             var isValid = await validator.ValidateAsync(request, cancellationToken);
             if (isValid.Errors.Any())
                 return new {templateModel?.ResponseTypeName}(FeedBackCode.ValidationNotValid, isValid.Errors);

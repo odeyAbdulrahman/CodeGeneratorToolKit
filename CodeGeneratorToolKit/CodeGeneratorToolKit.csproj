@@ -3,13 +3,13 @@
   <PropertyGroup>
 	<TargetFramework>net6.0</TargetFramework>
 	<PackageId>Code.Generator.ToolKit</PackageId>
-	<Authors>@Od</Authors>
+	<Authors>@odey abdalrahman</Authors>
 	<ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Version>1.0.02</Version>
+    <Version>1.0.16</Version>
 	<PackageTags>Helper Core</PackageTags>
-	<AssemblyVersion>1.1.0.02</AssemblyVersion>
-	<FileVersion>1.1.0.02</FileVersion>
+	<AssemblyVersion>1.1.0.16</AssemblyVersion>
+	<FileVersion>1.1.0.16</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
