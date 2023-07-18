@@ -64,7 +64,6 @@ namespace CodeGeneratorToolKit.FeaturesGenerator.Templates
                 return new {templateModel?.ResponseTypeName}(FeedBackCode.ValidationNotValid, isValid.Errors);
 
             var getRow = await UnitOfWork.{generatorModel?.FileName}.GetAsync(x => x.Id == request.Id);
-
             if (getRow is null)
                 return new {templateModel?.ResponseTypeName}(FeedBackCode.NotFound);
 
